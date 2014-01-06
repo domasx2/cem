@@ -1,0 +1,24 @@
+{
+  "name": "cem",
+  "version": "0.0.0",
+  "description": "component-entity manager",
+  "main": "lib/cem.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "repository": "",
+  "keywords": [
+    "component",
+    "entity"
+  ],
+  "author": "Domas Lapinskas",
+  "license": "WTFPL",
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "mocha": "~1.10.0",
+    "should": "~1.2.2",
+    "q": "~0.9.6",
+    "grunt-browserify2": "~0.1.8",
+    "grunt-contrib-uglify": "~0.2.7"
+  }
+}

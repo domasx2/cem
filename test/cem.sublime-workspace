@@ -1,0 +1,1331 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"deferr",
+				"deferredObject"
+			],
+			[
+				"Product",
+				"ProductSearchController"
+			],
+			[
+				"dossier",
+				"dossier_statuses"
+			],
+			[
+				"regu",
+				"regulatory_statuses"
+			],
+			[
+				"forei",
+				"foreignKey"
+			],
+			[
+				"subs",
+				"Substance"
+			],
+			[
+				"mole",
+				"molecule_name2"
+			],
+			[
+				"Regist",
+				"RegistrationModal"
+			],
+			[
+				"pas",
+				"passwordHash"
+			],
+			[
+				"filte",
+				"filterSocketsByUser"
+			],
+			[
+				"recipie",
+				"recipients_all"
+			],
+			[
+				"recipient",
+				"recipients_inline"
+			],
+			[
+				"recipi",
+				"recipients_inline"
+			],
+			[
+				"recip",
+				"recipients_all"
+			],
+			[
+				"broadcas",
+				"broadcastUnreadCount"
+			],
+			[
+				"broad",
+				"broadcastMessageUpdateToUser"
+			],
+			[
+				"passpo",
+				"passportSocketIo"
+			],
+			[
+				"be",
+				"beforeEach"
+			],
+			[
+				"dev",
+				"development"
+			],
+			[
+				"midd",
+				"auth_middleware"
+			],
+			[
+				"auth",
+				"authSource"
+			],
+			[
+				"Aut",
+				"authSources"
+			],
+			[
+				"lo",
+				"lobby_path"
+			],
+			[
+				"bandi",
+				"banditracer_client"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/home/domas/Projects/cem/Gruntfile.js",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "events.js",
+			"settings":
+			{
+				"buffer_size": 4830,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/package.json",
+			"settings":
+			{
+				"buffer_size": 414,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/builtins/collection.js",
+			"settings":
+			{
+				"buffer_size": 752,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "collection.js",
+			"settings":
+			{
+				"buffer_size": 1501,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/entity.js",
+			"settings":
+			{
+				"buffer_size": 2872,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "module.exports = function(obj){\n    obj._callbacks = {};\n    obj._observed_by = [];\n    \n    function evlist(events){\n        if( (typeof events) === 'string'){\n            events = events.split(' ');\n        }\n        return events;\n    };\n    \n    obj._suppress_events = false;\n\n    function observefn(event){\n        this.fire(prefix+':'+event, args.slice(1));\n    }\n\n    // re-fire all target's events on this object, with a prefix\n    obj.observe = function(prefix, target){\n        if(target.hasOwnProperty('_observed_by')){\n            target._observed_by.push({\n                observer: this,\n                prefix: prefix\n            });\n        } else {\n            console.log('trying to observe unobservable!', target);\n        }\n    };\n\n    //stop observing object\n    obj.unobserve = function(target){\n        var observed_by = [];\n        target._observed_by.forEach(function(o){\n            if(!(o.observer === this)) observed_by.push(o);\n        }, this);\n        target._observed_by = observed_by;\n    };\n    \n\n    obj.once = function(events, callback, context) {\n        obj.on(events, callback, context, true);\n    },\n\n    obj.on = function(events, callback, context, once){    \n        evlist(events).forEach(function(event){\n            if(!this._callbacks[event]) this._callbacks[event] = [];\n            this._callbacks[event].push([callback, context, once]);\n        }, this);\n\n        if(context && context.on){\n            context.on('destroy', function () {\n                obj.off(events, callback, context);\n            });\n        }\n    };\n    \n    \n    obj.off = function(events, callback, context){\n        if(!(callback || context)){\n            console.log('Off called without arguments.');\n            return;\n        }\n        evlist(events).forEach(function(event){\n            if(this._callbacks[event]){\n                var nlist = [];\n                this._callbacks[event].forEach(function(cb){\n                    if(!((!callback || cb[0].toString()==callback.toString()) && (cb[1]==context || !context))) nlist.push(cb); \n                }, this);\n                this._callbacks[event] = nlist;\n            } \n        }, this);\n    };\n\n    obj.__trigger = function(event, args){\n        if(this._callbacks[event]){\n            var l = [];\n            this._callbacks[event].forEach(function(cb){\n                cb[0].apply(cb[1], args);\n                if(!cb[2]) l.push(cb);\n            }, this);\n            this._callbacks[event] = l;\n        }\n    };\n    \n    obj.trigger = function(event, args){\n        args = (args || []).slice(0);\n        //console.log(event, args);\n        if(this._suppress_events) return;\n        \n        for(var key in this) {\n            if(key.search('on_'+event) == 0) {\n                this[key].apply(this, args);\n            }\n        }\n\n        if(!args) args = [this];\n        else args.splice(0, 0, this);\n        this.__trigger(event, args);\n\n        this._observed_by.forEach(function(o){\n            o.observer.trigger(o.prefix+':'+event, args);\n        });\n\n        args.splice(0, 0, event);\n        this.__trigger('*', args);\n    };\n}\n",
+			"file": "/home/domas/Projects/cem/lib/eventify.js",
+			"file_size": 3127,
+			"file_write_time": 1371325017000000,
+			"settings":
+			{
+				"buffer_size": 3127,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/builtins/evented.js",
+			"settings":
+			{
+				"buffer_size": 3310,
+				"line_ending": "Unix",
+				"name": "evented.js"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/manager.js",
+			"settings":
+			{
+				"buffer_size": 1628,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "module.exports = {\n    serialize: function () {\n        \n    }\n}",
+			"file": "/home/domas/Projects/cem/lib/builtins/serializable.js",
+			"file_size": 0,
+			"file_write_time": 1371398764000000,
+			"settings":
+			{
+				"buffer_size": 64,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/builtins/object.js",
+			"settings":
+			{
+				"buffer_size": 45,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/builtins/index.js",
+			"settings":
+			{
+				"buffer_size": 123,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "entity.js",
+			"settings":
+			{
+				"buffer_size": 2784,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "manager.js",
+			"settings":
+			{
+				"buffer_size": 1335,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/utils.js",
+			"settings":
+			{
+				"buffer_size": 320,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/domas/Projects/cem/lib/cem.js",
+			"settings":
+			{
+				"buffer_size": 145,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/JSHint/JSHint.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"jsh",
+				"JSHint"
+			],
+			[
+				"j",
+				"JSHint"
+			],
+			[
+				"pp",
+				"Package Control: Install Package"
+			],
+			[
+				"mark",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"ss sli",
+				"Set Syntax: Ruby Slim"
+			],
+			[
+				"sssli",
+				"Set Syntax: Ruby Slim"
+			],
+			[
+				"ss sl",
+				"Set Syntax: Ruby Slim"
+			],
+			[
+				"cheat",
+				"Markdown Preview: open Markdown Cheat sheet"
+			],
+			[
+				"ss java",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"mar",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"markdo",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"form",
+				"Format: Javascript"
+			],
+			[
+				"mk",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"jshi",
+				"JSHint"
+			],
+			[
+				"js",
+				"JSHint"
+			],
+			[
+				"sssty",
+				"Set Syntax: Stylus"
+			],
+			[
+				"ssmark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"Sn",
+				"Snippet: html"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"pack",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 530.0
+	},
+	"console":
+	{
+		"height": 139.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/outlet_top.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/products.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/header.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/public/lib/ember-1.0.0-rc.4.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/application.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/product-search.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/product-list.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/product-search-bar.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/routes/index-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/routes/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/controllers/product-search-controller.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/controllers/my-product-search-controller.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/views/product-search-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/controllers/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/router.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/routes/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/routes/products-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/routes/my-products.route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/views/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/views/product-list-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/components/inputs/substance.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/extensions/linkview.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/stylesheets/style.less",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/routes/application-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/substances/page.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/views/application-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/routes/my-products-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/products/my-product-search-bar.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/products/product-search-bar.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/views/product-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/views/product-form-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/models/product-model.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/index.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/views/products-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/public/lib/ember-easyForm-0.3.1.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/models/Product.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/api/product.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/views/head.jade",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/routes/admin-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/main.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/extensions/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/extensions/easyform.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/routes/substances-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/views/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/models/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/controllers/product-edit-controller.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/application-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/inlicensing_edit.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/base/views/product-search-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/outlet.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/routes/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/models/TherapyArea.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/data/therapy_areas.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/tasks/inserttherapyareas.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/models/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/api/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/data.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/models/InlicensingProduct.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/models/Country.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/utils.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/inlicensing.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/global/views/products-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/global/product-model.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/contact.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/product_view.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/data/product/regulatory-statuses.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/routes/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/outlicensing_edit.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/auth/login/login-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/components/modal/modal-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/auth/registration/registration-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/tasks/insertcountries.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/tasks/dropmodels.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/tasks/insertsubstances.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/tasks/insertusers.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/tasks/syncmodels.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/contact/contact-modal.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/contact/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/base/controllers/product-controller.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/base/controllers/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/helpers.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/base/views/product-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/modal.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/views/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/substances.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/routes/substances-new-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/routes/substances-page-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/views/substancelist-page-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/routes/substancelist-route.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/substances_page.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/views/admin-menu-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/substance-form-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/substances/index.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/app/views/menu-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/outlicesing_product_form.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/controllers/substancelist-page-controller.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/views/substancelist-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/views/substances-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/substances.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/substances/list.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/substancelist.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/api/substance.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/pagination.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/public/lib/ember-pagination.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/controllers/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/substances/views/substance-form-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/outlicensing.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/inlicesing_product_form.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/outlicensing/controllers/outlicensing-base-controller.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/templates/outlicesing_product_view.emblem",
+		"/home/domas/Projects/LargeCode/pipelinepharma/config/development.yaml",
+		"/home/domas/Projects/LargeCode/pipelinepharma/server/models/Substance.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/config/default.yaml",
+		"/home/domas/Projects/LargeCode/pipelinepharma/README.md",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/components/inputs/autocomplete.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/components/inputs/staticselect.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/global/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/global/views/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/global/controllers/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/inlicensing/inlicensing-model.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/inlicensing/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/inlicensing/views/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/inlicensing/views/inlicensing-search-view.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/outlicensing/views/index.js",
+		"/home/domas/Projects/LargeCode/pipelinepharma/client/js/products/outlicensing/outlicensing-model.js"
+	],
+	"find":
+	{
+		"height": 92.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"console.log",
+			"submit",
+			"validate!",
+			"console.log",
+			"submit",
+			"Checkbox",
+			"checkedBinding",
+			"check",
+			"Ember.Checkbox",
+			"Checkbox",
+			"TextFi",
+			"input",
+			"Radio",
+			"radio",
+			"submit",
+			"EasyForm.Submit",
+			"connectOutlet",
+			"controllerFor:",
+			"controllerFor =",
+			"controllerFor",
+			"LinkView",
+			"linkTo",
+			"LinkView",
+			"linkTo",
+			"');\n",
+			"Products.",
+			"enum",
+			"ns",
+			"Model",
+			"find:",
+			"textarea",
+			"console.log",
+			"makeComputedAtt",
+			".product-item-description",
+			".product-item-title",
+			"Ember.Select",
+			"Select",
+			"extractMeta",
+			"RecordArray",
+			"findAll",
+			"console.log",
+			"*",
+			"molecule_name",
+			"SODYUM OX",
+			"CEFRADINE'",
+			"NULL",
+			"getInputT",
+			"registerInp",
+			"_inputTypes",
+			"registerInputType",
+			"presence",
+			"Ember.EasyForm.Input",
+			"registerBoundHelper",
+			"registerBoundHelper no",
+			"Ember.EasyForm.Form",
+			"EasyForm.Input",
+			"EasyForm.",
+			"EasyForm.BaseView =",
+			"EasyForm.Input",
+			"input",
+			"view",
+			"controller",
+			"submit",
+			"\"submit\"",
+			"Ember.EasyForm.Form",
+			"Ember.E",
+			"input",
+			"EasyForm.Form",
+			"Form",
+			"Form:",
+			"inli",
+			"Ember.ENV",
+			"---",
+			"Ember.V",
+			"debug",
+			"prepareData",
+			"url",
+			"attributesToSQL",
+			"sync",
+			"NOW",
+			"Sequelize",
+			"forFor",
+			"submit",
+			"deserialize:",
+			"deserialize",
+			"Find",
+			"deserialize",
+			"deserialize: ",
+			"deserialize",
+			"'errors'",
+			".Errors",
+			"'errors'",
+			"Ember.Validations.Errors",
+			"'errors'",
+			"onError",
+			"saveRecord",
+			"View",
+			".views",
+			"ApplicationView",
+			"error",
+			"form",
+			"didError",
+			"extractValidation",
+			"errors",
+			"validate",
+			"invalid",
+			"isValid",
+			"submit",
+			"validate",
+			"recordWasInvalid:",
+			"ajax(",
+			"ajax",
+			".ajax",
+			"url: ",
+			"becameError",
+			"error: ",
+			"$.Ajax",
+			"Ajax",
+			"didError",
+			"serializ",
+			"getProp",
+			"DS.Model",
+			"isActive",
+			"isActive(",
+			"currentHandlerInfos",
+			"isActive:",
+			"isActive",
+			"linkTo"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"models.",
+			"models",
+			"ENUM",
+			"Product",
+			"span",
+			"label",
+			"substance_",
+			"null",
+			"messageType",
+			"lastDay",
+			"setUpHandlers",
+			"ng_module"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/domas/Projects/cem/Gruntfile.js",
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "events.js",
+					"settings":
+					{
+						"buffer_size": 4830,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4783,
+								4783
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2655.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/domas/Projects/cem/package.json",
+					"settings":
+					{
+						"buffer_size": 414,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								388,
+								388
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"default_dir": "/home/domas/Projects/cem/lib",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/domas/Projects/cem/lib/builtins/collection.js",
+					"settings":
+					{
+						"buffer_size": 752,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								370,
+								370
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "collection.js",
+					"settings":
+					{
+						"buffer_size": 1501,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								686,
+								686
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/domas/Projects/cem/lib/entity.js",
+					"settings":
+					{
+						"buffer_size": 2872,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1227,
+								1227
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 405.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/home/domas/Projects/cem/lib/eventify.js",
+					"settings":
+					{
+						"buffer_size": 3127,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2191,
+								2191
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/domas/Projects/cem/lib/builtins/evented.js",
+					"settings":
+					{
+						"buffer_size": 3310,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								641,
+								641
+							]
+						],
+						"settings":
+						{
+							"auto_name": "evented.js",
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/domas/Projects/cem/lib/manager.js",
+					"settings":
+					{
+						"buffer_size": 1628,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1450,
+								1450
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 495.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/home/domas/Projects/cem/lib/builtins/serializable.js",
+					"settings":
+					{
+						"buffer_size": 64,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								56,
+								56
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/domas/Projects/cem/lib/builtins/object.js",
+					"settings":
+					{
+						"buffer_size": 45,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								45,
+								45
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/home/domas/Projects/cem/lib/builtins/index.js",
+					"settings":
+					{
+						"buffer_size": 123,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								123,
+								123
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "entity.js",
+					"settings":
+					{
+						"buffer_size": 2784,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "manager.js",
+					"settings":
+					{
+						"buffer_size": 1335,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1322,
+								1322
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 225.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "/home/domas/Projects/cem/lib/utils.js",
+					"settings":
+					{
+						"buffer_size": 320,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								320,
+								320
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "/home/domas/Projects/cem/lib/cem.js",
+					"settings":
+					{
+						"buffer_size": 145,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								77,
+								77
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 203.0
+	},
+	"output.git":
+	{
+		"height": 100.0
+	},
+	"output.jslint_result_view":
+	{
+		"height": 112.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"ember-va",
+				"public/lib/ember-validations/ember-validations-0.2.1.js"
+			],
+			[
+				"ember-vali",
+				"public/lib/ember-validations/ember-validations-0.2.1.js"
+			],
+			[
+				"ember-",
+				"public/lib/ember-validations/ember-validations-0.2.1.js"
+			],
+			[
+				"eas",
+				"public/lib/ember-easyForm-0.3.1.js"
+			],
+			[
+				"easy",
+				"public/lib/ember-easyForm-0.3.1.js"
+			],
+			[
+				"ember",
+				"public/lib/ember-restless.js"
+			],
+			[
+				"ember-validat",
+				"public/lib/ember-validations/ember-validations-0.2.1.js"
+			],
+			[
+				"ember-val",
+				"public/lib/ember-validations/ember-validations-0.2.1.js"
+			],
+			[
+				"easyf",
+				"public/lib/ember-easyForm-0.3.1.js"
+			],
+			[
+				"product-new",
+				"client/templates/products/product-new.emblem"
+			],
+			[
+				"",
+				"public/lib/ember-1.0.0-rc.4.js"
+			],
+			[
+				"em",
+				"public/lib/ember-1.0.0-rc.4.js"
+			],
+			[
+				"route",
+				"client/js/router.js"
+			],
+			[
+				"easyfo",
+				"public/lib/ember-easyForm-0.3.1.js"
+			],
+			[
+				"message",
+				"model/message.js"
+			],
+			[
+				"mess",
+				"model/message.js"
+			],
+			[
+				"socket",
+				"sockets.js"
+			],
+			[
+				"messa",
+				"model/message.js"
+			],
+			[
+				"socke",
+				"sockets.js"
+			],
+			[
+				"soc",
+				"sockets.js"
+			],
+			[
+				"mesa",
+				"model/message.js"
+			],
+			[
+				"me",
+				"routes/messages.js"
+			],
+			[
+				"app",
+				"app.js"
+			],
+			[
+				"so",
+				"sockets.js"
+			],
+			[
+				"st",
+				"public/stylesheets/style.styl"
+			],
+			[
+				"my_",
+				"views/my_wishes.jade"
+			],
+			[
+				"my",
+				"views/my_wishes.jade"
+			],
+			[
+				"wish",
+				"views/wish.jade"
+			],
+			[
+				"contr",
+				"apps/api/controllers.js"
+			],
+			[
+				"cont",
+				"apps/api/controllers.js"
+			],
+			[
+				"co",
+				"apps/api/controllers.js"
+			],
+			[
+				"contro",
+				"apps/api/controllers.js"
+			],
+			[
+				"lobb",
+				"lib/app/lobby.js"
+			],
+			[
+				"routes",
+				"lib/app/routes.js"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 298.0,
+	"status_bar_visible": true
+}
