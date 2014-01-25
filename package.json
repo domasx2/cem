@@ -1,6 +1,6 @@
 {
   "name": "cem",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "component-entity manager",
   "main": "lib/cem.js",
   "scripts": {

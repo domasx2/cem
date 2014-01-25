@@ -73,7 +73,7 @@ Entity.prototype.__extend = function(component) {
 
     //copy properties
     Object.keys(component).forEach(function(key) {
-        if(key.slice(0, 2) != '__' && !RESERVED[key]){
+        if(key.slice(0, 2) !== '__' && !RESERVED[key]){
             property = component[key];
             if((typeof property) === 'function') {
                 if(!component.__name) {
@@ -82,25 +82,28 @@ Entity.prototype.__extend = function(component) {
                 self[key] = property;
 
             } else {
+                if(key.slice(0, 1) !== '_') {
+                    if ((typeof property) === 'object') {
+                        property = utils.deep_copy(property);
+                    } 
 
-                if ((typeof property) === 'object') {
-                    property = utils.deep_copy(property);
-                } 
+                    if(self.__properties[key] === undefined){
 
-                if(self.__properties[key] === undefined){
+                        Object.defineProperty(self, key, {
+                            set: function (val){
+                                self.__properties[key] = val;
+                                if(self.trigger) self.trigger('set_'+key, [val]);
+                            },
+                            get: function () {
+                                return self.__properties[key];
+                            }   
+                        });
+                    }
 
-                    Object.defineProperty(self, key, {
-                        set: function (val){
-                            self.__properties[key] = val;
-                            if(self.trigger) self.trigger('set_'+key, [val]);
-                        },
-                        get: function () {
-                            return self.__properties[key];
-                        }   
-                    });
+                    self.__properties[key] = property;
+                } else {
+                    self[key] = property;
                 }
-
-                self.__properties[key] = property;
             }
         }
     });
@@ -203,7 +206,10 @@ module.exports = {
     _objects_by_id: {},
     length: 0,
 
-
+    bootstrap: function () {
+        this._objects = [];
+        this._objects_by_id = {};
+    },
 
     add: function(object){
         this._objects.push(object);
@@ -251,12 +257,14 @@ module.exports = {
 
     bootstrap: function () {
         //make event_x work
+        this._callbacks = {};
+        this._observed_by = [];
 
         for(var key in this) {
             if(key.substring(0, 6) == 'event_'){
                 (function(key, fn, self){
                     self[key] = function () {
-                        self.trigger(key, arguments);
+                        self.trigger(key, Array.prototype.slice.call(arguments));
                     }
                     self.on(key, fn, self);
                 })(key.substring(6), this[key], this);
@@ -309,6 +317,9 @@ module.exports = {
     },
 
     observe: function(prefix, target) {
+        if(target === this) {
+            throw new Error("Tryin to obsrver self.");
+        }
         if(target._observed_by) {
             target._observed_by.push({
                 prefix: prefix,
@@ -340,9 +351,7 @@ module.exports = {
     
     trigger: function(event, args){
         args = (args || []).slice(0);
-        //console.log(event, args);
         if(this._suppress_events) return;
-        
         for(var key in this) {
             if(key.indexOf('on_'+event) == 0 && !this.destroyed) {
                 this[key].apply(this, args);
@@ -352,10 +361,9 @@ module.exports = {
         if(!args) args = [this];
         else args.splice(0, 0, this);
         this._trigger(event, args);
-
         this._observed_by.forEach(function(o){
             o.observer.trigger(o.prefix+':'+event, args);
-        });
+        }, this);
 
         args.splice(0, 0, event);
         this._trigger('*', args);
