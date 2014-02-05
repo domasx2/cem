@@ -1,12 +1,12 @@
 {
   "name": "cem",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "component-entity manager",
   "main": "lib/cem.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha"
   },
-  "repository": "",
+  "repository": "https://github.com/domasx2/cem",
   "keywords": [
     "component",
     "entity"
