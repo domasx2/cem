@@ -92,7 +92,10 @@ Entity.prototype.__extend = function(component) {
                         Object.defineProperty(self, key, {
                             set: function (val){
                                 self.__properties[key] = val;
-                                if(self.trigger) self.trigger('set_'+key, [val]);
+                                if(self.trigger) {
+                                    self.trigger('set_'+key, [val]);
+                                    self.trigger('set', [key, val]);
+                                }
                             },
                             get: function () {
                                 return self.__properties[key];
